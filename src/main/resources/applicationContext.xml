@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+
+    <bean id="bbs" class="com.minis.test.service.BaseBaseService" init-method="init">
+        <property type="com.minis.test.service.AServiceImpl" name="as" ref="aservice"/>
+    </bean>
+    <bean id="aservice" class="com.minis.test.service.AServiceImpl">
+        <constructor-arg type="String" name="name" value="abc"/>
+        <constructor-arg type="int" name="level" value="3"/>
+        <property type="String" name="property1" value="Someone says"/>
+        <property type="String" name="property2" value="Hello World!"/>
+        <property type="com.minis.test.service.BaseService" name="ref1" ref="baseservice"/>
+    </bean>
+    <bean id="baseservice" class="com.minis.test.service.BaseService"/>
+    <bean id="userService" class="com.minis.test.service.UserService"/>
+
+    <bean id="genaralProxy" class="GeneralProxy">
+        <property type="String" name="pattern" value="action*"/>
+        <property type="String" name="interceptorName" value="advisor"/>
+    </bean>
+
+    <bean id="autoProxyCreator" class="com.minis.minispring.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+        <property type="String" name="pattern" value="action*"/>
+        <property type="String" name="interceptorName" value="advisor"/>
+    </bean>
+
+
+    <bean id="realaction" class="com.minis.test.service.Action1"/>
+    <bean id="beforeAdvice" class="com.minis.test.service.MyBeforeAdvice"/>
+    <bean id="advisor" class="com.minis.minispring.aop.NameMatchMethodPointcutAdvisor">
+        <property type="com.minis.minispring.aop.Advice" name="advice" ref="beforeAdvice"/>
+        <property type="String" name="mappedName" value="do*"/>
+    </bean>
+
+
+    <bean id="action" class="com.minis.minispring.aop.ProxyFactoryBean">
+        <property type="java.lang.Object" name="target" ref="realaction"/>
+        <property type="String" name="interceptorName" value="advisor"/>
+    </bean>
+
+
+    <bean id="dataSource" class="com.minis.minispring.jdbc.pool.PooledDataSource">
+        <property type="String" name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
+        <property type="String" name="url" value="jdbc:sqlserver://localhost:1433;databasename=DEMO;"/>
+        <property type="String" name="username" value="sa"/>
+        <property type="String" name="password" value="Sql2016"/>
+        <property type="int" name="initialSize" value="3"/>
+    </bean>
+
+
+    <bean id="jdbcTemplate" class="com.minis.minispring.jdbc.core.JdbcTemplate">
+        <property type="javax.sql.DataSource" name="dataSource" ref="dataSource"/>
+    </bean>
+
+
+    <bean id="contextListener" class="com.minis.test.MyListener"/>
+
+    <bean id="beanFactoryPostProcessor" class="com.minis.test.MyBeanFactoryPostProcessor"/>
+
+    <bean id="autowiredAnnotationBeanPostProcessor"
+          class="com.minis.minispring.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>
+    <bean id="logBeanPostProcessor" class="com.minis.test.LogBeanPostProcessor"/>
+
+
+    <bean id="handlerMapping" class="com.minis.minispring.web.method.annotation.RequestMappingHandlerMapping"/>
+
+    <bean id="handlerAdapter" class="com.minis.minispring.web.method.annotation.RequestMappingHandlerAdapter">
+        <property type="com.minis.minispring.http.converter.HttpMessageConverter" name="messageConverter"
+                  ref="messageConverter"/>
+        <property type="com.minis.minispring.web.bind.support.WebBindingInitializer" name="webBindingInitializer"
+                  ref="webBindingInitializer"/>
+    </bean>
+
+    <bean id="webBindingInitializer" class="com.minis.test.DateInitializer"/>
+    <bean id="messageConverter" class="com.minis.minispring.http.converter.DefaultHttpMessageConverter">
+        <property type="com.minis.minispring.util.ObjectMapper" name="objectMapper" ref="objectMapper"/>
+    </bean>
+    <bean id="objectMapper" class="com.minis.minispring.util.DefaultObjectMapper">
+        <property type="String" name="dateFormat" value="yyyy/MM/dd"/>
+        <property type="String" name="decimalFormat" value="###.##"/>
+    </bean>
+    >
+
+    <bean id="viewResolver" class="com.minis.minispring.web.servlet.view.InternalResourceViewResolver">
+        <property type="String" name="viewClassName" value="com.minis.minispring.web.servlet.view.JstlView"/>
+        <property type="String" name="prefix" value="/jsp/"/>
+        <property type="String" name="suffix" value=".jsp"/>
+    </bean>
+
+    <bean id="sqlSessionFactory" class="com.minis.minispring.batis.DefaultSqlSessionFactory" init-method="init">
+        <property type="String" name="mapperLocations" value="mapper"></property>
+    </bean>
+
+</beans>
